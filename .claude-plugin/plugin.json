@@ -1,6 +1,6 @@
 {
   "name": "investment-autoresearch",
-  "description": "Parallel agent loop for trading strategy research — autoresearch, parse, report, and chart-to-Slack skills",
+  "description": "Parallel agent loop for trading strategy research — autoresearch, parse, report, and strategy charting skills",
   "version": "1.0.0",
   "author": {
     "name": "lucemia",

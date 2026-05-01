@@ -23,13 +23,13 @@ The reset step is the key move. Existing code anchors thinking. Fresh agents fin
 | `autoresearch` | Core parallel loop — baseline → agents → insights → repeat |
 | `autoresearch-parse` | Parse `verified_insights.md` + agent results into structured JSON |
 | `autoresearch-report` | Generate a markdown report from `autoresearch_result.json` |
-| `chart-to-slack` | Generate matplotlib strategy charts and upload to Slack |
+| `strategy-chart` | Generate matplotlib strategy charts; optional upload to Slack, Discord, or save locally |
 
 ## Prerequisites
 
 - [Claude Code](https://claude.ai/code)
 - A backtesting framework with a CLI command (Backtesting.py works natively)
-- A Slack bot token with `files:write` and `chat:write` scopes
+- Optional: a Slack or Discord bot token for chart uploads
 
 ## Installation
 

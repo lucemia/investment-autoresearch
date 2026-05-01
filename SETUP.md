@@ -8,28 +8,23 @@ Complete these steps once before using the plugin skills.
 claude plugin install gh:lucemia/investment-autoresearch
 ```
 
-## 2. Set your Slack bot token
+## 2. Set up chart uploads (optional)
 
-Add to your shell profile (`~/.zshrc` or `~/.bash_profile`):
+The `strategy-chart` skill generates charts locally at `/tmp/chart.png`. Upload is optional.
 
+**Slack:** Add to your shell profile:
 ```bash
 export SLACK_BOT_TOKEN=xoxb-your-token-here
 ```
+Get a token at https://api.slack.com/apps — add `files:write` and `chat:write` scopes.
 
-Then reload: `source ~/.zshrc`
+Find your channel ID: right-click any Slack channel → **View channel details** → copy the ID (`C0XXXXXXXXX`). Update the channel ID in `skills/strategy-chart/SKILL.md`.
 
-To get a token: create a Slack app at https://api.slack.com/apps, add `files:write` and `chat:write` bot scopes, install to your workspace, copy the Bot User OAuth Token.
+**Discord:** Set `DISCORD_BOT_TOKEN` and use your channel ID from the Discord developer portal.
 
-## 3. Find your Slack channel ID
+**Local only:** Skip this step — charts save to `/tmp/chart.png` and can be copied manually.
 
-In Slack: right-click your `#investment` channel → **View channel details** → copy the ID shown at the bottom (format: `C0XXXXXXXXX`).
-
-Update the channel ID in `skills/chart-to-slack/SKILL.md`:
-```
-| #investment  | YOUR_CHANNEL_ID |
-```
-
-## 4. Configure your backtest command
+## 3. Configure your backtest command
 
 The `autoresearch-parse` skill needs a CLI command that:
 - Accepts `--ticker` and `--strategy` arguments
