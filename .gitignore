@@ -1,0 +1,11 @@
+# Research output — user-generated, not part of plugin
+archive/
+
+# Example runtime artifacts
+/strategies/
+__pycache__/
+.pytest_cache/
+*.pyc
+*.pyo
+.DS_Store
+/tmp/chart.png
