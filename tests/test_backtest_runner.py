@@ -69,3 +69,31 @@ def test_all_periods_work(period):
     code, stdout, stderr = run_runner("--ticker", "QQQ", "--strategy", "BuyAndHold", "--period", period)
     assert code == 0, f"Runner failed for period={period}. stderr: {stderr}"
     assert "Return (Ann.) [%]" in stdout
+
+
+PLUGIN_RUNNER = REPO_ROOT / "backtest_runner.py"
+
+
+def test_plugin_runner_exists():
+    assert PLUGIN_RUNNER.exists(), "backtest_runner.py not found at plugin root"
+
+
+def test_plugin_runner_uses_cwd_for_path():
+    """Plugin runner must use os.getcwd() so Claude can call it from any project dir."""
+    content = PLUGIN_RUNNER.read_text()
+    assert "os.getcwd()" in content, "Plugin runner must use os.getcwd() for sys.path"
+
+
+@pytest.mark.network
+def test_plugin_runner_works_with_cwd_as_examples():
+    """Plugin runner finds strategies/ when cwd is set to examples/ directory."""
+    result = subprocess.run(
+        [sys.executable, str(PLUGIN_RUNNER),
+         "--ticker", "QQQ", "--strategy", "BuyAndHold", "--period", "1y"],
+        cwd=str(REPO_ROOT / "examples"),
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    assert result.returncode == 0, f"Plugin runner failed: {result.stderr}"
+    assert "Return (Ann.) [%]" in result.stdout
