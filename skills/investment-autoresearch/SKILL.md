@@ -36,55 +36,98 @@ digraph autoresearch {
 }
 ```
 
-## Setup Requirements
+## Setup Detection
 
-Before starting, you need:
+Before asking the user anything, silently check for missing dependencies:
 
-1. **Scoring command**: Single command that outputs a comparable metric
+```bash
+python3 -c "import backtesting, yfinance" 2>/dev/null || pip install backtesting yfinance
+```
+
+Do not mention this to the user. Deps are an implementation detail.
+
+## Onboarding
+
+Ask only two questions — nothing else:
+
+**Q1:** "What ticker would you like to research? (e.g. QQQ, AAPL, TSLA)"
+
+**Q2:** "What matters more to you — higher returns, or limiting losses?"
+
+Then auto-handle everything below without user input:
+
+1. Auto-increment session version:
    ```bash
-   # Example: backtest that outputs Return (Ann.) [%] and Max. Drawdown [%]
-   YOUR_BACKTEST_COMMAND --ticker SOXL --strategy MyStrategy
+   ls archive/ 2>/dev/null | grep -c "{ticker}-autoresearch" || echo 0
    ```
+   Use next N → session folder = `archive/{ticker}-autoresearch-v{N}/`
 
-2. **Baseline numbers**: Run scoring on current best to establish the bar
-
-3. **Name the session folder** and create it:
-
+2. Create directories:
    ```bash
-   # New session: auto-increment version from existing folders
-   ls archive/ | grep {ticker}-autoresearch   # check existing: v1, v2, ...
    mkdir -p archive/{ticker}-autoresearch-v{N}
+   mkdir -p strategies/{ticker}
+   touch strategies/{ticker}/__init__.py
    ```
 
-   Session folder naming: `archive/{ticker}-autoresearch-v{N}` where N increments per session.
-   Example: `soxl-autoresearch-v1/`, `soxl-autoresearch-v2/`, `soxl-autoresearch-v3/`
+3. Write baseline strategy to `strategies/{ticker}/BuyAndHold.py`:
+   ```python
+   from backtesting import Strategy
 
-   **All output files go into the session folder — never the repo root.**
-   - `verified_insights.md` → `archive/{ticker}-autoresearch-v{N}/verified_insights.md`
-   - Agent result files → `archive/{ticker}-autoresearch-v{N}/AGENT_R{N}_RESULTS.md`
+   class BuyAndHold(Strategy):
+       def init(self):
+           pass
 
-   **IMPORTANT — Seeding from prior sessions:**
-   - Before creating a new session, check the latest prior session folder for `verified_insights.md`.
-   - Copy it into the new session folder as the starting point: all prior confirmed principles and rejections carry forward.
-   - Clear "Open hypotheses" and update "Baseline" to reflect the new session's starting point.
+       def next(self):
+           if not self.position:
+               self.buy()
+   ```
 
+4. Run baseline:
+   ```bash
+   cd {cwd} && python ~/.claude/plugins/cache/lucemia/investment-autoresearch/backtest_runner.py \
+     --ticker {TICKER} --strategy BuyAndHold --period 5y
+   ```
+
+5. Seed `archive/{ticker}-autoresearch-v{N}/verified_insights.md`:
    ```markdown
-   # Verified Insights — [Ticker/Project]
+   # Verified Insights — {TICKER}
 
    ## Baseline
-   - Current best: [strategy/model] = [score]
-   - Buy & hold / naive baseline = [score]
+   - Current best: BuyAndHold = Return (Ann.) {X}%, MaxDD {Y}%, Calmar {Z}
+   - Goal: {higher returns | limiting losses}
+   - Scoring: cd {cwd} && python ~/.claude/plugins/cache/lucemia/investment-autoresearch/backtest_runner.py --ticker {TICKER} --strategy {StrategyName} --period {period}
 
    ## Confirmed principles
-   1. [What works and why]
+   (none yet — first session)
 
    ## Rejected approaches
-   1. [What failed and why]
+   (none yet — first session)
 
    ## Open hypotheses to test
-   - [Hypothesis A]
-   - [Hypothesis B]
+   {seed 4-6 from Hypothesis Seeding section below}
    ```
+
+6. Launch agents (Phase 1 below).
+
+**Never mention to the user:** scoring command, session folder, verified_insights.md, git worktrees, backtest_runner.py, walk-forward validation.
+
+## Hypothesis Seeding by Goal
+
+Pick 4–6 hypotheses from the matching pool. On subsequent sessions, read `verified_insights.md` rejected approaches and exclude those.
+
+**"Higher returns" pool:**
+- Momentum: buy when 3-month price return > 0, exit when negative
+- Trend-following SMA 20/50: buy on fast-crosses-slow, sell on reverse
+- Breakout: buy on new 52-week high close, exit on 10% trailing stop
+- Volatility regime: hold only when VIX < 20, else cash
+- Dual momentum: hold only when ticker outperforms 3-month T-bill return
+
+**"Limiting losses" pool:**
+- Golden cross SMA 50/200: buy when 50 > 200, sell when 200 > 50
+- Volatility exit: exit when 20-day realized volatility exceeds 30%, reenter when < 20%
+- Trailing stop: exit at -10% from rolling 52-week high, reenter on new high
+- Price regime: hold only when price > 200-day SMA, else cash
+- RSI filter: exit when RSI(14) > 75, reenter when RSI(14) < 40
 
 ## Phase 1: Parallel Exploration
 
@@ -96,15 +139,39 @@ Agent(
   run_in_background=true,
   prompt="""
   Read archive/{ticker}-autoresearch-v{N}/verified_insights.md first.
-  Baseline: [current best] = [score].
 
-  YOUR HYPOTHESIS: [specific, testable claim]
+  Baseline: BuyAndHold = Return (Ann.) {X}%, MaxDD {Y}%, Calmar {Z}
+  Goal: {higher returns | limiting losses}
+
+  YOUR HYPOTHESIS: {specific, testable claim}
 
   STEPS:
-  1. Implement the variant
-  2. Run: [scoring command]
-  3. Report: full comparison table
-  4. Write results to archive/{ticker}-autoresearch-v{N}/AGENT_R[X]_RESULTS.md
+  1. Write your strategy to strategies/{ticker}/{StrategyName}.py
+     (Replace {StrategyName} with a descriptive CamelCase name, e.g. GoldenCross, MomentumFilter)
+     The file must contain exactly one class with the same name as the file.
+     The class must extend backtesting.Strategy and implement init() and next().
+     Create strategies/{ticker}/__init__.py (empty) if it doesn't exist.
+
+  2. Run backtest across all four periods:
+     cd {cwd} && python ~/.claude/plugins/cache/lucemia/investment-autoresearch/backtest_runner.py \
+       --ticker {TICKER} --strategy {StrategyName} --period 5y
+     cd {cwd} && python ~/.claude/plugins/cache/lucemia/investment-autoresearch/backtest_runner.py \
+       --ticker {TICKER} --strategy {StrategyName} --period 3y
+     cd {cwd} && python ~/.claude/plugins/cache/lucemia/investment-autoresearch/backtest_runner.py \
+       --ticker {TICKER} --strategy {StrategyName} --period 2y
+     cd {cwd} && python ~/.claude/plugins/cache/lucemia/investment-autoresearch/backtest_runner.py \
+       --ticker {TICKER} --strategy {StrategyName} --period 1y
+
+  3. For each period compute: Calmar = Return (Ann.) [%] / abs(Max. Drawdown [%])
+
+  4. Write results to archive/{ticker}-autoresearch-v{N}/AGENT_R{round}_{StrategyName}_RESULTS.md:
+     - Hypothesis statement
+     - Results table: period | Ann.Return | MaxDD | Calmar
+     - Verdict vs baseline: BEAT / WORSE / MIXED
+     - Key insight
+
+  DO NOT touch main repo strategies/ — you are in an isolated worktree.
+  DO NOT create backtest_runner.py — use the plugin's runner at the path above.
   """
 )
 ```
@@ -127,6 +194,16 @@ After all agents complete:
 3. Decide: more exploration or reset?
 
 **Plateau signal**: When 5+ agents fail to beat baseline, or improvements are <5% marginal.
+
+## Winner Promotion
+
+After updating `verified_insights.md`, promote any strategy that beat the baseline Calmar in at least one period:
+
+```bash
+cp {worktree}/strategies/{ticker}/{StrategyName}.py {cwd}/strategies/{ticker}/{StrategyName}.py
+```
+
+One file per winning strategy. Losing strategies stay in their worktrees and are auto-cleaned up. The user's `strategies/{ticker}/` folder accumulates only strategies worth keeping.
 
 ## Phase 3: Reset (The Key Move)
 
