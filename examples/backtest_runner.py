@@ -13,8 +13,12 @@ import argparse
 import importlib
 import sys
 
+import pandas as pd
 import yfinance as yf
 from backtesting import Backtest
+
+import pathlib
+sys.path.insert(0, str(pathlib.Path(__file__).parent))
 
 
 def load_strategy(ticker: str, strategy_name: str):
@@ -36,7 +40,8 @@ def fetch_data(ticker: str, period: str):
     if data.empty:
         print(f"ERROR: No data returned for {ticker} over {period}", file=sys.stderr)
         sys.exit(1)
-    if hasattr(data.columns, "droplevel") and isinstance(data.columns[0], tuple):
+    # yfinance >= 0.2 returns MultiIndex (field, ticker) for single-ticker downloads
+    if isinstance(data.columns, pd.MultiIndex):
         data.columns = data.columns.droplevel(1)
     return data
 
