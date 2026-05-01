@@ -1,5 +1,5 @@
 ---
-name: strategy-chart
+name: investment-strategy-chart
 description: Use when creating matplotlib/strategy charts. Use when user asks to "draw", "chart", "plot", or "visualize" a strategy, backtest result, or price series. Optionally uploads to a chat platform.
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: autoresearch-parse
+name: investment-autoresearch-parse
 description: Use when converting autoresearch markdown results (verified_insights.md and AGENT_R*_RESULTS.md) into structured JSON for reporting or slides generation.
 ---
 

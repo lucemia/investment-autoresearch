@@ -1,5 +1,5 @@
 ---
-name: autoresearch-report
+name: investment-autoresearch-report
 description: Use when generating a structured markdown report from an autoresearch_result.json file for a given ticker. Triggered when user asks for a report, summary, or writeup of autoresearch results.
 ---
 
@@ -14,7 +14,7 @@ Read the JSON file for the requested ticker:
 archive/{ticker}-autoresearch-v{N}/autoresearch_result.json
 ```
 
-If no version is specified, use the latest `v{N}` directory. If the JSON doesn't exist, run the `autoresearch-parse` skill first.
+If no version is specified, use the latest `v{N}` directory. If the JSON doesn't exist, run the `investment-autoresearch-parse` skill first.
 
 ## Report Template
 

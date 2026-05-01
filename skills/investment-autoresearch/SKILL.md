@@ -1,5 +1,5 @@
 ---
-name: autoresearch
+name: investment-autoresearch
 description: Use when optimizing a strategy, model, or system through parallel experimentation — when the search space is large, multiple hypotheses exist, and there is an automated scoring function to evaluate variants.
 ---
 
