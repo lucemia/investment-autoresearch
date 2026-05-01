@@ -5,6 +5,10 @@ import pytest
 REPO_ROOT = Path(__file__).parent.parent
 
 
+def pytest_configure(config):
+    config.addinivalue_line("markers", "network: marks tests that require network access (yfinance)")
+
+
 @pytest.fixture
 def repo_root():
     return REPO_ROOT

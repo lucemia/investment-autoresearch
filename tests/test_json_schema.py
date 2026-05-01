@@ -50,6 +50,14 @@ def validate_result_json(data: dict) -> list:
     rec = data.get("recommendation", {})
     if "graduate" not in rec:
         errors.append("Missing recommendation.graduate")
+    if "confidence" not in rec:
+        errors.append("Missing recommendation.confidence")
+
+    for i, item in enumerate(data.get("leaderboard", [])):
+        if "strategy_name" not in item:
+            errors.append(f"leaderboard[{i}] missing 'strategy_name'")
+        if "rank" not in item:
+            errors.append(f"leaderboard[{i}] missing 'rank'")
 
     return errors
 
@@ -75,6 +83,12 @@ def test_missing_rejected_reason_is_invalid(sample_result_json):
     sample_result_json["rejected_approaches"] = [{"approach": "SMA 10/30"}]
     errors = validate_result_json(sample_result_json)
     assert any("reason" in e for e in errors)
+
+
+def test_missing_recommendation_confidence_is_invalid(sample_result_json):
+    del sample_result_json["recommendation"]["confidence"]
+    errors = validate_result_json(sample_result_json)
+    assert any("confidence" in e for e in errors)
 
 
 def test_real_result_json_if_exists(repo_root):

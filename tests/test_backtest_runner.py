@@ -26,6 +26,7 @@ def test_runner_exists():
     assert RUNNER.exists(), "examples/backtest_runner.py not found"
 
 
+@pytest.mark.network
 def test_buy_and_hold_prints_required_fields():
     code, stdout, stderr = run_runner("--ticker", "QQQ", "--strategy", "BuyAndHold", "--period", "1y")
     assert code == 0, f"Runner exited {code}. stderr: {stderr}"
@@ -42,8 +43,10 @@ def test_unknown_strategy_exits_nonzero():
 def test_unknown_ticker_module_exits_nonzero():
     code, stdout, stderr = run_runner("--ticker", "FAKEXYZ", "--strategy", "BuyAndHold", "--period", "1y")
     assert code != 0, "Expected non-zero exit for unknown ticker module"
+    assert "ERROR" in stderr, "Expected ERROR message in stderr"
 
 
+@pytest.mark.network
 @pytest.mark.parametrize("period", ["1y", "2y", "3y", "5y"])
 def test_all_periods_work(period):
     code, stdout, stderr = run_runner("--ticker", "QQQ", "--strategy", "BuyAndHold", "--period", period)
