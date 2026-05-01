@@ -26,6 +26,23 @@ def test_runner_exists():
     assert RUNNER.exists(), "examples/backtest_runner.py not found"
 
 
+def test_strategy_files_exist():
+    """Each strategy must have its own file under examples/strategies/qqq/"""
+    qqq_dir = REPO_ROOT / "examples" / "strategies" / "qqq"
+    assert (qqq_dir / "__init__.py").exists(), "Missing examples/strategies/qqq/__init__.py"
+    for name in ["BuyAndHold", "SmaCross", "SmaCross_10_30", "SmaCross_50_200", "RsiStrategy"]:
+        path = qqq_dir / f"{name}.py"
+        assert path.exists(), f"Missing: examples/strategies/qqq/{name}.py"
+
+
+def test_strategy_file_class_name_matches_filename():
+    """Each strategy file must contain a class with the same name as the file."""
+    qqq_dir = REPO_ROOT / "examples" / "strategies" / "qqq"
+    for name in ["BuyAndHold", "SmaCross", "SmaCross_10_30", "SmaCross_50_200", "RsiStrategy"]:
+        content = (qqq_dir / f"{name}.py").read_text()
+        assert f"class {name}(" in content, f"examples/strategies/qqq/{name}.py must define class {name}"
+
+
 @pytest.mark.network
 def test_buy_and_hold_prints_required_fields():
     code, stdout, stderr = run_runner("--ticker", "QQQ", "--strategy", "BuyAndHold", "--period", "1y")
