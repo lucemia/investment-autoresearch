@@ -72,8 +72,7 @@ Skip steps above. Charts save to `/tmp/chart.png` automatically.
 Run the test suite from the plugin repo:
 
 ```bash
-pip install pytest
-python -m pytest tests/ -v
+pip install pytest && python -m pytest tests/ -v
 ```
 
 All tests should pass. The runner smoke tests require network access for yfinance data.
