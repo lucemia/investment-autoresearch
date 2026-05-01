@@ -22,16 +22,16 @@ sys.path.insert(0, str(pathlib.Path(__file__).parent))
 
 
 def load_strategy(ticker: str, strategy_name: str):
-    module_name = f"strategies.{ticker.lower()}"
+    module_name = f"strategies.{ticker.lower()}.{strategy_name}"
     try:
         module = importlib.import_module(module_name)
     except ModuleNotFoundError:
-        print(f"ERROR: No strategy module found at {module_name}.py", file=sys.stderr)
+        print(f"ERROR: No strategy file found at strategies/{ticker.lower()}/{strategy_name}.py", file=sys.stderr)
         sys.exit(1)
     try:
         return getattr(module, strategy_name)
     except AttributeError:
-        print(f"ERROR: Strategy '{strategy_name}' not found in {module_name}", file=sys.stderr)
+        print(f"ERROR: Class '{strategy_name}' not found in strategies/{ticker.lower()}/{strategy_name}.py", file=sys.stderr)
         sys.exit(1)
 
 
