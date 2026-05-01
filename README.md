@@ -28,6 +28,7 @@ The reset step is the key move. Existing code anchors thinking. Fresh agents fin
 ## Prerequisites
 
 - [Claude Code](https://claude.ai/code)
+- git 2.5+ (required for isolated worktrees)
 - Python 3.9+ with `backtesting` and `yfinance` installed
 - A CLI backtest command that outputs `Return (Ann.) [%]` and `Max. Drawdown [%]`
 - Optional: Slack or Discord bot token for chart uploads
@@ -43,11 +44,12 @@ pip install backtesting yfinance
 
 ### 1. Set up your backtest runner (one-time)
 
-Copy the example runner into your trading project:
+Copy the example runner from the plugin repo into your trading project. The plugin is installed at `~/.claude/plugins/cache/lucemia/investment-autoresearch/`:
 
 ```bash
-cp examples/backtest_runner.py your-project/
-cp -r examples/strategies/ your-project/strategies/
+PLUGIN=~/.claude/plugins/cache/lucemia/investment-autoresearch
+cp $PLUGIN/examples/backtest_runner.py your-project/
+cp -r $PLUGIN/examples/strategies/ your-project/strategies/
 ```
 
 Add your strategy classes to `strategies/{ticker}.py`. Verify it works:
@@ -103,7 +105,7 @@ All research output goes under `archive/{ticker}-autoresearch-v{N}/`:
 archive/
 └── qqq-autoresearch-v1/
     ├── verified_insights.md        ← cumulative state (baseline, insights, rejections, hypotheses)
-    ├── AGENT_R1_RESULTS.md         ← per-round agent results
+    ├── AGENT_R1_RESULTS.md         ← round 1 results (one file per agent or per hypothesis)
     ├── AGENT_R2_RESULTS.md
     └── autoresearch_result.json    ← parsed + walk-forward metrics (from /autoresearch-parse)
 ```

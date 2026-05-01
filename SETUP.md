@@ -16,11 +16,12 @@ pip install backtesting yfinance
 
 ## 3. Set up your backtest runner
 
-Copy the example runner into your trading project:
+Copy the example runner into your trading project. The plugin is installed at `~/.claude/plugins/cache/lucemia/investment-autoresearch/`:
 
 ```bash
-cp examples/backtest_runner.py your-project/
-cp -r examples/strategies/ your-project/strategies/
+PLUGIN=~/.claude/plugins/cache/lucemia/investment-autoresearch
+cp $PLUGIN/examples/backtest_runner.py your-project/
+cp -r $PLUGIN/examples/strategies/ your-project/strategies/
 ```
 
 Add your strategy classes to `your-project/strategies/{ticker}.py`. Each class must extend `backtesting.Strategy`. The runner discovers classes by module name — `--ticker QQQ --strategy MyStrategy` loads `strategies.qqq.MyStrategy`.
@@ -58,6 +59,8 @@ export SLACK_BOT_TOKEN=xoxb-your-token-here
 
 **Update the channel ID** in `skills/investment-autoresearch-strategy-chart/SKILL.md`:
 Find `YOUR_CHANNEL_ID` and replace with your actual channel ID (e.g. `C0XXXXXXXXX`).
+
+> **Note:** This edit lives inside the plugin install directory. If you reinstall or update the plugin, you will need to re-apply this change. Alternatively, set `SLACK_CHANNEL_ID` as an env var and update the skill to read from it instead.
 
 ### Discord
 
