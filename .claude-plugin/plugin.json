@@ -1,0 +1,20 @@
+{
+  "name": "investment-autoresearch",
+  "description": "Parallel agent loop for trading strategy research — autoresearch, parse, report, and chart-to-Slack skills",
+  "version": "1.0.0",
+  "author": {
+    "name": "lucemia",
+    "email": "lucemia@gmail.com"
+  },
+  "homepage": "https://github.com/lucemia/investment-autoresearch",
+  "repository": "https://github.com/lucemia/investment-autoresearch",
+  "license": "MIT",
+  "keywords": [
+    "trading",
+    "investment",
+    "autoresearch",
+    "backtesting",
+    "parallel-agents",
+    "skills"
+  ]
+}
