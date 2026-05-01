@@ -150,6 +150,12 @@ Agent(
      (Replace {StrategyName} with a descriptive CamelCase name, e.g. GoldenCross, MomentumFilter)
      The file must contain exactly one class with the same name as the file.
      The class must extend backtesting.Strategy and implement init() and next().
+     Key backtesting.py API:
+       - Indicators: self.sma = self.I(lambda x: pd.Series(x).rolling(N).mean(), self.data.Close)
+       - Trade: self.buy(), self.position.close()
+       - Data: self.data.Close, self.data.Open, self.data.High, self.data.Low, self.data.Volume
+       - Import pandas as pd if using rolling/ewm indicators
+     Reference: read strategies/{ticker}/BuyAndHold.py for the minimal working pattern.
      Create strategies/{ticker}/__init__.py (empty) if it doesn't exist.
 
   2. Run backtest across all four periods:
@@ -197,13 +203,22 @@ After all agents complete:
 
 ## Winner Promotion
 
-After updating `verified_insights.md`, promote any strategy that beat the baseline Calmar in at least one period:
+After updating `verified_insights.md`, check each agent's results file for strategies that beat the baseline Calmar in at least one period.
 
+Each agent runs in an isolated git worktree. To find a worktree's path:
 ```bash
-cp {worktree}/strategies/{ticker}/{StrategyName}.py {cwd}/strategies/{ticker}/{StrategyName}.py
+git worktree list
+```
+The worktree for an agent is listed with its branch name (Claude assigns a temp branch per agent).
+
+Promote winning strategies to the main repo:
+```bash
+# For each winning strategy from a completed agent worktree:
+git worktree list  # find the worktree path
+cp {worktree_path}/strategies/{ticker}/{StrategyName}.py {cwd}/strategies/{ticker}/{StrategyName}.py
 ```
 
-One file per winning strategy. Losing strategies stay in their worktrees and are auto-cleaned up. The user's `strategies/{ticker}/` folder accumulates only strategies worth keeping.
+One file per winning strategy. Losing strategies stay in their worktrees (auto-cleaned up by `ExitWorktree`). The user's `strategies/{ticker}/` folder accumulates only strategies worth keeping.
 
 ## Phase 3: Reset (The Key Move)
 
@@ -250,5 +265,5 @@ Repeat until diminishing returns
 | Not recording failures | Failed experiments are insights too — update verified_insights.md |
 | Skipping baseline | Always establish baseline before launching agents |
 | Overfitting to score | Watch for small sample sizes, validate on out-of-sample data |
-| **Files in repo root** | **All output goes into `archive/{ticker}-autoresearch/`. Never write verified_insights.md or AGENT_R*_RESULTS.md to the repo root.** |
+| **Files in repo root** | **All output goes into `archive/{ticker}-autoresearch-v{N}/`. Never write verified_insights.md or AGENT_R*_RESULTS.md to the repo root.** |
 | Only optimizing 5y RA | Run walk-forward validation (1y/2y/3y/5y). Use min-RA across periods to avoid overfitting. |
