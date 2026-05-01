@@ -1,4 +1,4 @@
-"""Smoke tests for the example backtest runner."""
+"""Smoke tests for the example and plugin-root backtest runners."""
 import subprocess
 import sys
 from pathlib import Path
