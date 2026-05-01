@@ -8,63 +8,72 @@ Complete these steps once before using the plugin skills.
 claude plugin install gh:lucemia/investment-autoresearch
 ```
 
-## 2. Set up chart uploads (optional)
+## 2. Install Python dependencies
 
-The `strategy-chart` skill generates charts locally at `/tmp/chart.png`. Upload is optional.
+```bash
+pip install backtesting yfinance
+```
 
-**Slack:** Add to your shell profile:
+## 3. Set up your backtest runner
+
+Copy the example runner into your trading project:
+
+```bash
+cp examples/backtest_runner.py your-project/
+cp -r examples/strategies/ your-project/strategies/
+```
+
+Add your strategy classes to `your-project/strategies/{ticker}.py`. Each class must extend `backtesting.Strategy`. The runner discovers classes by module name — `--ticker QQQ --strategy MyStrategy` loads `strategies.qqq.MyStrategy`.
+
+Verify it works:
+
+```bash
+cd your-project
+python backtest_runner.py --ticker QQQ --strategy BuyAndHold --period 5y
+```
+
+You should see output containing:
+```
+Return (Ann.) [%]    15.5
+Max. Drawdown [%]    -34.2
+```
+
+## 4. Configure chart uploads (optional)
+
+### Slack
+
+**Get a bot token:**
+1. Go to https://api.slack.com/apps → Create New App
+2. Add OAuth scopes: `files:write`, `chat:write`
+3. Install to workspace and copy the `xoxb-` bot token
+
+**Get your channel ID:**
+Right-click any Slack channel → **View channel details** → copy the ID (starts with `C`).
+
+**Set in your shell profile** (`~/.zshrc` or `~/.bashrc`):
+
 ```bash
 export SLACK_BOT_TOKEN=xoxb-your-token-here
 ```
-Get a token at https://api.slack.com/apps — add `files:write` and `chat:write` scopes.
 
-Find your channel ID: right-click any Slack channel → **View channel details** → copy the ID (`C0XXXXXXXXX`). Update the channel ID in `skills/strategy-chart/SKILL.md`.
+**Update the channel ID** in `skills/investment-autoresearch-strategy-chart/SKILL.md`:
+Find `YOUR_CHANNEL_ID` and replace with your actual channel ID (e.g. `C0XXXXXXXXX`).
 
-**Discord:** Set `DISCORD_BOT_TOKEN` and use your channel ID from the Discord developer portal.
+### Discord
 
-**Local only:** Skip this step — charts save to `/tmp/chart.png` and can be copied manually.
+Set `DISCORD_BOT_TOKEN` in your shell profile and use your Discord channel ID when the skill prompts.
 
-## 3. Configure your backtest command
+### Local only
 
-The `autoresearch-parse` skill needs a CLI command that:
-- Accepts `--ticker` and `--strategy` arguments
-- Accepts a `--period` argument (values: `5y`, `3y`, `2y`, `1y`)
-- Prints output containing `Return (Ann.) [%]` and `Max. Drawdown [%]`
+Skip steps above. Charts save to `/tmp/chart.png` automatically.
 
-**If you use Backtesting.py**, its default `print(stats)` output already contains these fields — no adaptation needed.
+## 5. Verify everything works
 
-**Example runner template** (if you need to build one):
+Run the test suite from the plugin repo:
 
-```python
-# backtest_runner.py
-import argparse
-from backtesting import Backtest
-import yfinance as yf
-
-parser = argparse.ArgumentParser()
-parser.add_argument("--ticker", required=True)
-parser.add_argument("--strategy", required=True)
-parser.add_argument("--period", default="5y")
-args = parser.parse_args()
-
-# Import strategy dynamically
-import importlib
-module = importlib.import_module(f"strategies.{args.ticker.lower()}")
-strategy_cls = getattr(module, args.strategy)
-
-# Fetch data
-data = yf.download(args.ticker, period=args.period)
-data.columns = data.columns.droplevel(1)
-
-# Run backtest
-bt = Backtest(data, strategy_cls, cash=10_000, commission=0.002)
-stats = bt.run()
-print(stats)
+```bash
+pip install pytest
+python -m pytest tests/ -v
 ```
 
-Once built, record your command in your project notes:
-```
-YOUR_BACKTEST_COMMAND = python backtest_runner.py
-```
-
-When using `/autoresearch-parse`, replace `YOUR_BACKTEST_COMMAND` with this command.
+All tests should pass. The runner smoke tests require network access for yfinance data.
