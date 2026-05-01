@@ -130,8 +130,10 @@ print(stats)  # Backtesting.py prints Return (Ann.) [%] and Max. Drawdown [%] na
 
 ### Step 1 — Find the strategy Python class name
 
+Replace `<YOUR_STRATEGY_DIR>` with your actual strategy directory path (e.g. `src/strategies/`, `strategies/`, `my_app/trading/`):
+
 ```bash
-grep -rn "class.*{strategy_name_keywords}" src/strategies/{ticker}/
+grep -rn "class.*{strategy_name_keywords}" <YOUR_STRATEGY_DIR>/{ticker}/
 ```
 
 ### Step 2 — Run across four periods
