@@ -1,5 +1,5 @@
 ---
-name: investment-autoresearch-report
+name: investment-autoresearch:report
 description: Use when generating a structured markdown report from an autoresearch_result.json file for a given ticker. Triggered when user asks for a report, summary, or writeup of autoresearch results.
 ---
 

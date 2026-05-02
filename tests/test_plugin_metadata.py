@@ -52,6 +52,8 @@ def test_skill_md_name_matches_dir(skill_dir):
     name_match = re.search(r"^name:\s*(.+)$", frontmatter, re.MULTILINE)
     assert name_match, f"{skill_dir.name}/SKILL.md frontmatter 'name:' not parseable"
     name = name_match.group(1).strip()
-    assert name == skill_dir.name, (
-        f"{skill_dir.name}/SKILL.md name='{name}' does not match directory name '{skill_dir.name}'"
+    # Allow plugin-namespaced names: "plugin:skill" → skill part must match dir name
+    skill_part = name.split(":")[-1]
+    assert skill_part == skill_dir.name, (
+        f"{skill_dir.name}/SKILL.md name='{name}' — skill part '{skill_part}' does not match directory name '{skill_dir.name}'"
     )

@@ -6,7 +6,7 @@ A complete end-to-end example of the autoresearch loop applied to QQQ. Two sessi
 
 ## What this demo covers
 
-- Running `/investment-autoresearch` from scratch (zero config)
+- Running `/investment-autoresearch:autoresearch` from scratch (zero config)
 - How parallel agents test hypotheses independently
 - Reading results and how insights carry forward across sessions
 - How the loop compounds: Calmar 0.45 → 1.02 in two sessions
@@ -23,9 +23,6 @@ claude plugin install gh:lucemia/investment-autoresearch
 
 # Option B — manual
 git clone https://github.com/lucemia/investment-autoresearch ~/.claude/plugins/cache/lucemia/investment-autoresearch
-for skill in ~/.claude/plugins/cache/lucemia/investment-autoresearch/skills/*/; do
-  cp -r "$skill" ~/.claude/skills/"$(basename "$skill")"
-done
 
 pip install backtesting yfinance
 ```
@@ -36,7 +33,7 @@ That's it. No project files to copy — the skill creates everything automatical
 
 ## Session v1 — Broad exploration
 
-**Command:** `/investment-autoresearch` in Claude Code
+**Command:** `/investment-autoresearch:autoresearch` in Claude Code
 
 Claude asks two questions:
 
@@ -87,7 +84,7 @@ Four agents ran in parallel — one per hypothesis:
 
 The skill promoted SmaCross_50_200 as the new baseline, seeded 4 new hypotheses targeting the known weaknesses: slow reentry and large drawdown. The `verified_insights.md` from v1 was carried forward automatically.
 
-**Command:** `/investment-autoresearch` (same command, new session auto-incremented to v2)  
+**Command:** `/investment-autoresearch:autoresearch` (same command, new session auto-incremented to v2)  
 **Session folder:** `archive/qqq-autoresearch-v2/`  
 **New target:** Beat Calmar 0.46 on 5y AND ≥ 1.0 on 2y
 
@@ -150,7 +147,7 @@ archive/
 
 ## Next steps (Round 2, v2)
 
-Four hypotheses ready to test in the next `/investment-autoresearch` call:
+Four hypotheses ready to test in the next `/investment-autoresearch:autoresearch` call:
 
 | Hypothesis | Key idea |
 |------------|----------|
@@ -189,7 +186,7 @@ python3 backtest_runner.py --ticker QQQ --strategy PriceAbove200Sma --period 2y
 
 ## Lessons for other tickers
 
-- **No setup required** — just run `/investment-autoresearch`, answer two questions, the skill handles the rest
+- **No setup required** — just run `/investment-autoresearch:autoresearch`, answer two questions, the skill handles the rest
 - **Walk-forward validation matters** — strategies that look good on 5y often fall apart on 2y (different market regime)
 - **One hypothesis per agent** — agents with multiple hypotheses produce harder-to-interpret results
 - **Record rejections explicitly** — H5 (SMA 30/100) ruled out a whole class of future hypotheses in one test

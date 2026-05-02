@@ -19,7 +19,7 @@ The reset step is the key move. Existing code anchors thinking. Fresh agents fin
 
 ```mermaid
 flowchart TD
-    A(["/investment-autoresearch"]) --> B["Ask: ticker + goal"]
+    A(["/investment-autoresearch:autoresearch"]) --> B["Ask: ticker + goal"]
     B --> C["Run baseline\nBuyAndHold → Calmar score"]
     C --> D["Seed verified_insights.md\n4–6 hypotheses"]
     D --> E["Launch parallel agents\none hypothesis each · isolated worktree"]
@@ -36,7 +36,7 @@ flowchart TD
 ## What it looks like
 
 ```
-/investment-autoresearch
+/investment-autoresearch:autoresearch
 
   What ticker? → QQQ
   Higher returns or limiting losses? → limiting losses
@@ -53,17 +53,17 @@ flowchart TD
 
   Winner promoted → strategies/qqq/PriceAbove200Sma.py
   Insights updated → archive/qqq-autoresearch-v1/verified_insights.md
-  Next: run /investment-autoresearch again to continue from here
+  Next: run /investment-autoresearch:autoresearch again to continue from here
 ```
 
 ## Skills
 
-| Skill | Trigger | Description |
-|---|---|---|
-| `investment-autoresearch` | `/investment-autoresearch` | Core parallel loop — two questions, then baseline → agents → insights → repeat |
-| `investment-autoresearch-parse` | `/investment-autoresearch-parse` | Parse agent results into structured JSON + walk-forward backtests |
-| `investment-autoresearch-report` | `/investment-autoresearch-report` | Generate a markdown report from `autoresearch_result.json` |
-| `investment-autoresearch-strategy-chart` | `/investment-autoresearch-strategy-chart` | Generate matplotlib strategy chart; upload to Slack, Discord, or save locally |
+| Trigger | Description |
+|---|---|
+| `/investment-autoresearch:autoresearch` | Core parallel loop — two questions, then baseline → agents → insights → repeat |
+| `/investment-autoresearch:parse` | Parse agent results into structured JSON + walk-forward backtests |
+| `/investment-autoresearch:report` | Generate a markdown report from `autoresearch_result.json` |
+| `/investment-autoresearch:strategy-chart` | Generate matplotlib strategy chart; upload to Slack, Discord, or save locally |
 
 ## Prerequisites
 
@@ -77,21 +77,18 @@ flowchart TD
 ```bash
 git clone https://github.com/lucemia/investment-autoresearch ~/.claude/plugins/cache/lucemia/investment-autoresearch
 pip install backtesting yfinance
-
-# Register skills with Claude Code:
-for skill in ~/.claude/plugins/cache/lucemia/investment-autoresearch/skills/*/; do
-  cp -r "$skill" ~/.claude/skills/"$(basename "$skill")"
-done
 ```
 
-> Once this plugin is listed in the Claude Code marketplace, installation will be a single command: `claude plugin install gh:lucemia/investment-autoresearch`
+Then restart Claude Code — it will auto-discover the plugin from the cache directory.
+
+> Once listed in the Claude Code marketplace, installation will simplify to: `claude plugin install gh:lucemia/investment-autoresearch`
 
 ## Usage
 
 ### 1. Run autoresearch
 
 ```
-/investment-autoresearch
+/investment-autoresearch:autoresearch
 ```
 
 Claude asks two questions — ticker and goal — then handles everything automatically: baseline run, hypothesis seeding, parallel agents, result collection, winner promotion.
@@ -99,7 +96,7 @@ Claude asks two questions — ticker and goal — then handles everything automa
 ### 2. Parse results
 
 ```
-/investment-autoresearch-parse
+/investment-autoresearch:parse
 ```
 
 Runs walk-forward backtests across 1y/2y/3y/5y and produces `autoresearch_result.json`.
@@ -107,7 +104,7 @@ Runs walk-forward backtests across 1y/2y/3y/5y and produces `autoresearch_result
 ### 3. Generate report
 
 ```
-/investment-autoresearch-report
+/investment-autoresearch:report
 ```
 
 Produces a structured markdown report from `autoresearch_result.json`.
@@ -115,7 +112,7 @@ Produces a structured markdown report from `autoresearch_result.json`.
 ### 4. Visualize
 
 ```
-/investment-autoresearch-strategy-chart
+/investment-autoresearch:strategy-chart
 ```
 
 Generates a 3-panel matplotlib chart (price + equity curve, drawdown, VIX). Optionally uploads to Slack or Discord.

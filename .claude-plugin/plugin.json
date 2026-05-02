@@ -1,10 +1,12 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "investment-autoresearch",
-  "description": "Parallel agent loop for trading strategy research — autoresearch, parse, report, and strategy charting skills",
   "version": "1.0.0",
+  "description": "Parallel agent loop for trading strategy research — baseline → hypotheses → agents → insights → repeat",
   "author": {
     "name": "lucemia",
-    "email": "lucemia@gmail.com"
+    "email": "lucemia@gmail.com",
+    "url": "https://github.com/lucemia"
   },
   "homepage": "https://github.com/lucemia/investment-autoresearch",
   "repository": "https://github.com/lucemia/investment-autoresearch",
@@ -12,9 +14,10 @@
   "keywords": [
     "trading",
     "investment",
-    "autoresearch",
     "backtesting",
     "parallel-agents",
-    "skills"
-  ]
+    "strategy-research",
+    "autoresearch"
+  ],
+  "skills": "./skills/"
 }
