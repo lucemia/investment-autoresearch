@@ -63,7 +63,7 @@ flowchart TD
 | `/investment-autoresearch:autoresearch` | Core parallel loop — two questions, then baseline → agents → insights → repeat |
 | `/investment-autoresearch:parse` | Parse agent results into structured JSON + walk-forward backtests |
 | `/investment-autoresearch:report` | Generate a markdown report from `autoresearch_result.json` |
-| `/investment-autoresearch:strategy-chart` | Generate matplotlib strategy chart; upload to Slack, Discord, or save locally |
+| `/investment-autoresearch:strategy-chart` | Generate matplotlib strategy chart saved to `/tmp/chart.png` |
 
 ## Prerequisites
 
@@ -114,7 +114,7 @@ Produces a structured markdown report from `autoresearch_result.json`.
 /investment-autoresearch:strategy-chart
 ```
 
-Generates a 3-panel matplotlib chart (price + equity curve, drawdown, VIX). Optionally uploads to Slack or Discord.
+Generates a 3-panel matplotlib chart (price + equity curve, drawdown, VIX) saved to `/tmp/chart.png`.
 
 ## Folder convention
 

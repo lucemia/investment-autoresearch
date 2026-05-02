@@ -8,7 +8,7 @@ Initial release.
 - `investment-autoresearch:autoresearch` — core parallel loop (two-question onboarding, baseline, agents, insights, reset)
 - `investment-autoresearch:parse` — walk-forward backtests across 1y/2y/3y/5y, produces `autoresearch_result.json`
 - `investment-autoresearch:report` — structured markdown report from `autoresearch_result.json`
-- `investment-autoresearch:strategy-chart` — 3-panel matplotlib chart with optional Slack/Discord upload
+- `investment-autoresearch:strategy-chart` — 3-panel matplotlib chart saved to `/tmp/chart.png`
 
 ### Examples
 - QQQ demo archive: two sessions, 8 strategies, Calmar 0.45 → 1.02

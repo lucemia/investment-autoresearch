@@ -1,11 +1,11 @@
 ---
 name: investment-autoresearch:strategy-chart
-description: Use when creating matplotlib/strategy charts. Use when user asks to "draw", "chart", "plot", or "visualize" a strategy, backtest result, or price series. Optionally uploads to a chat platform.
+description: Use when creating matplotlib/strategy charts. Use when user asks to "draw", "chart", "plot", or "visualize" a strategy, backtest result, or price series.
 ---
 
 # Strategy Chart
 
-Generate matplotlib charts for backtesting strategy results. Chart generation is standalone; upload to your chat platform is optional.
+Generate matplotlib charts for backtesting strategy results. Chart is saved to `/tmp/chart.png`.
 
 ## Step 1: Generate Chart
 
@@ -52,53 +52,9 @@ fig, axes = plt.subplots(3, 1, figsize=(16, 12),
                          gridspec_kw={"height_ratios": [3, 1.5, 1]})
 ```
 
-## Step 2: Upload (Optional)
+## Step 2: Save
 
-Once the chart is saved to `/tmp/chart.png`, upload it to your platform of choice.
-
-### Slack (3-step files API)
-
-Requires `SLACK_BOT_TOKEN` env var (`xoxb-` bot token with `files:write` scope).
-
-```bash
-SLACK_TOKEN=$SLACK_BOT_TOKEN
-
-# 2a. Get upload URL
-RESPONSE=$(curl -s -X POST "https://slack.com/api/files.getUploadURLExternal" \
-  -H "Authorization: Bearer $SLACK_TOKEN" \
-  -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "filename=chart.png&length=$(wc -c < /tmp/chart.png | tr -d ' ')")
-UPLOAD_URL=$(echo "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['upload_url'])")
-FILE_ID=$(echo "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['file_id'])")
-
-# 2b. Upload file
-curl -s -X POST "$UPLOAD_URL" -F "file=@/tmp/chart.png"
-
-# 2c. Complete upload to channel
-curl -s -X POST "https://slack.com/api/files.completeUploadExternal" \
-  -H "Authorization: Bearer $SLACK_TOKEN" \
-  -H "Content-Type: application/json; charset=utf-8" \
-  -d '{
-    "files": [{"id": "'$FILE_ID'", "title": "Chart Title"}],
-    "channel_id": "YOUR_CHANNEL_ID",
-    "initial_comment": "Description of the chart"
-  }'
-```
-
-### Discord
-
-Requires `DISCORD_BOT_TOKEN` and a channel webhook URL or channel ID.
-
-```bash
-curl -s -X POST "https://discord.com/api/v10/channels/YOUR_CHANNEL_ID/messages" \
-  -H "Authorization: Bot $DISCORD_BOT_TOKEN" \
-  -F "content=Description of the chart" \
-  -F "file=@/tmp/chart.png"
-```
-
-### Save locally
-
-If you don't need to upload, the chart is already at `/tmp/chart.png`. Copy it wherever needed:
+The chart is saved to `/tmp/chart.png`. Copy it wherever needed:
 
 ```bash
 cp /tmp/chart.png ~/charts/$(date +%Y-%m-%d)-strategy.png
@@ -110,6 +66,3 @@ cp /tmp/chart.png ~/charts/$(date +%Y-%m-%d)-strategy.png
 |---------|-----|
 | Forgetting `matplotlib.use("Agg")` | Required for non-interactive (headless) chart generation |
 | Not closing figure | Always `plt.close()` after `savefig` to free memory |
-| Slack: MCP tool for images | MCP `slack_send_message` can't attach files — use files API |
-| Slack: using `xoxp-` token | Use `xoxb-` bot token |
-| Slack: bot token not set | Set `SLACK_BOT_TOKEN` in your shell profile (`~/.zshrc`) or Claude Code env settings |
