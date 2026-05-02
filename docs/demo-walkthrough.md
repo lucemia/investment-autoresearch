@@ -59,7 +59,7 @@ your-project/
 
 ## Session v1 — Broad exploration
 
-**Trigger:** `/autoresearch` in Claude Code
+**Trigger:** `/investment-autoresearch` in Claude Code
 
 **Ticker:** QQQ  
 **Goal:** Higher returns (user answered Q2: "higher returns")  
@@ -156,7 +156,7 @@ archive/
 
 ## Next steps (Round 2, v2)
 
-Four hypotheses ready to test in the next `/autoresearch` call:
+Four hypotheses ready to test in the next `/investment-autoresearch` call:
 
 | Hypothesis | Key idea |
 |------------|----------|

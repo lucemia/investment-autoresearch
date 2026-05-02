@@ -37,10 +37,10 @@ flowchart TD
 
 | Skill | Trigger | Description |
 |---|---|---|
-| `investment-autoresearch` | `/autoresearch` | Core parallel loop — two questions, then baseline → agents → insights → repeat |
-| `investment-autoresearch-parse` | `/autoresearch-parse` | Parse agent results into structured JSON + walk-forward backtests |
-| `investment-autoresearch-report` | `/autoresearch-report` | Generate a markdown report from `autoresearch_result.json` |
-| `investment-autoresearch-strategy-chart` | `/autoresearch-strategy-chart` | Generate matplotlib strategy chart; upload to Slack, Discord, or save locally |
+| `investment-autoresearch` | `/investment-autoresearch` | Core parallel loop — two questions, then baseline → agents → insights → repeat |
+| `investment-autoresearch-parse` | `/investment-autoresearch-parse` | Parse agent results into structured JSON + walk-forward backtests |
+| `investment-autoresearch-report` | `/investment-autoresearch-report` | Generate a markdown report from `autoresearch_result.json` |
+| `investment-autoresearch-strategy-chart` | `/investment-autoresearch-strategy-chart` | Generate matplotlib strategy chart; upload to Slack, Discord, or save locally |
 
 ## Prerequisites
 
@@ -72,31 +72,31 @@ done
 ### 1. Run autoresearch
 
 ```
-/autoresearch
+/investment-autoresearch
 ```
 
 Claude asks two questions — ticker and goal — then handles everything automatically: baseline run, hypothesis seeding, parallel agents, result collection, winner promotion.
 
-### 3. Parse results
+### 2. Parse results
 
 ```
-/autoresearch-parse
+/investment-autoresearch-parse
 ```
 
 Runs walk-forward backtests across 1y/2y/3y/5y and produces `autoresearch_result.json`.
 
-### 4. Generate report
+### 3. Generate report
 
 ```
-/autoresearch-report
+/investment-autoresearch-report
 ```
 
 Produces a structured markdown report from `autoresearch_result.json`.
 
-### 5. Visualize
+### 4. Visualize
 
 ```
-/autoresearch-strategy-chart
+/investment-autoresearch-strategy-chart
 ```
 
 Generates a 3-panel matplotlib chart (price + equity curve, drawdown, VIX). Optionally uploads to Slack or Discord.
