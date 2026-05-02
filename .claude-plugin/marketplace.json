@@ -1,0 +1,25 @@
+{
+  "name": "lucemia-investment-autoresearch",
+  "owner": {
+    "name": "lucemia",
+    "email": "davidchen@gliacloud.com"
+  },
+  "metadata": {
+    "description": "Parallel agent loop for trading strategy research"
+  },
+  "plugins": [
+    {
+      "name": "investment-autoresearch",
+      "description": "Parallel agent loop for trading strategy research — baseline → hypotheses → agents → insights → repeat",
+      "author": {
+        "name": "lucemia"
+      },
+      "category": "productivity",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/lucemia/investment-autoresearch.git"
+      },
+      "homepage": "https://github.com/lucemia/investment-autoresearch"
+    }
+  ]
+}

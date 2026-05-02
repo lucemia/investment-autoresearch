@@ -74,15 +74,24 @@ flowchart TD
 ## Installation
 
 ```bash
-git clone https://github.com/lucemia/investment-autoresearch ~/.claude/plugins/cache/lucemia/investment-autoresearch
-pip install backtesting yfinance
+claude plugin install gh:lucemia/investment-autoresearch
+pip3 install backtesting yfinance
 ```
 
-Then restart Claude Code — it will auto-discover the plugin from the cache directory.
+Then restart Claude Code.
 
-To update later: `git -C ~/.claude/plugins/cache/lucemia/investment-autoresearch pull`
+To update later:
 
-> Once listed in the Claude Code marketplace, installation will simplify to: `claude plugin install gh:lucemia/investment-autoresearch`
+```bash
+claude plugin update investment-autoresearch
+```
+
+**Manual install (fallback):**
+
+```bash
+git clone https://github.com/lucemia/investment-autoresearch ~/.claude/plugins/cache/lucemia/investment-autoresearch
+pip3 install backtesting yfinance
+```
 
 ## Usage
 

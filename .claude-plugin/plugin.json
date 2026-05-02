@@ -17,6 +17,5 @@
     "parallel-agents",
     "strategy-research",
     "autoresearch"
-  ],
-  "skills": "./skills/"
+  ]
 }
