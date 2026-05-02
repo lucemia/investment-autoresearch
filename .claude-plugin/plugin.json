@@ -1,5 +1,4 @@
 {
-  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "investment-autoresearch",
   "version": "1.0.0",
   "description": "Parallel agent loop for trading strategy research — baseline → hypotheses → agents → insights → repeat",
