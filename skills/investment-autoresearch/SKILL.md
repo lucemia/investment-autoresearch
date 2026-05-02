@@ -58,9 +58,10 @@ Then auto-handle everything below without user input:
 
 1. Auto-increment session version:
    ```bash
-   ls archive/ 2>/dev/null | grep -c "{ticker}-autoresearch" || echo 0
+   ls archive/ 2>/dev/null | grep "{ticker}-autoresearch-v" | sed 's/.*-v//' | sort -n | tail -1 || echo 0
    ```
-   Use next N → session folder = `archive/{ticker}-autoresearch-v{N}/`
+   Add 1 to the result → session folder = `archive/{ticker}-autoresearch-v{N}/`
+   (e.g. if v1 exists → output is 1 → N = 2 → create `archive/{ticker}-autoresearch-v2/`)
 
 2. Create directories:
    ```bash
@@ -82,20 +83,26 @@ Then auto-handle everything below without user input:
                self.buy()
    ```
 
-4. Run baseline:
+4. Resolve the backtest runner path (silently):
    ```bash
-   cd {cwd} && python ~/.claude/plugins/cache/lucemia/investment-autoresearch/backtest_runner.py \
-     --ticker {TICKER} --strategy BuyAndHold --period 5y
+   RUNNER=~/.claude/plugins/cache/lucemia/investment-autoresearch/backtest_runner.py
+   [ -f "$RUNNER" ] || RUNNER={cwd}/backtest_runner.py
+   ```
+   Use `$RUNNER` in all subsequent commands.
+
+5. Run baseline:
+   ```bash
+   cd {cwd} && python3 $RUNNER --ticker {TICKER} --strategy BuyAndHold --period 5y
    ```
 
-5. Seed `archive/{ticker}-autoresearch-v{N}/verified_insights.md`:
+6. Seed `archive/{ticker}-autoresearch-v{N}/verified_insights.md`:
    ```markdown
    # Verified Insights — {TICKER}
 
    ## Baseline
    - Current best: BuyAndHold = Return (Ann.) {X}%, MaxDD {Y}%, Calmar {Z}
    - Goal: {higher returns | limiting losses}
-   - Scoring: cd {cwd} && python ~/.claude/plugins/cache/lucemia/investment-autoresearch/backtest_runner.py --ticker {TICKER} --strategy {StrategyName} --period {period}
+   - Scoring: cd {cwd} && python3 $RUNNER --ticker {TICKER} --strategy {StrategyName} --period {period}
 
    ## Confirmed principles
    (none yet — first session)
@@ -107,7 +114,7 @@ Then auto-handle everything below without user input:
    {seed 4-6 from Hypothesis Seeding section below}
    ```
 
-6. Launch agents (Phase 1 below).
+7. Launch agents (Phase 1 below).
 
 **Never mention to the user:** scoring command, session folder, verified_insights.md, git worktrees, backtest_runner.py, walk-forward validation.
 
@@ -159,14 +166,11 @@ Agent(
      Create strategies/{ticker}/__init__.py (empty) if it doesn't exist.
 
   2. Run backtest across all four periods:
-     cd {cwd} && python ~/.claude/plugins/cache/lucemia/investment-autoresearch/backtest_runner.py \
-       --ticker {TICKER} --strategy {StrategyName} --period 5y
-     cd {cwd} && python ~/.claude/plugins/cache/lucemia/investment-autoresearch/backtest_runner.py \
-       --ticker {TICKER} --strategy {StrategyName} --period 3y
-     cd {cwd} && python ~/.claude/plugins/cache/lucemia/investment-autoresearch/backtest_runner.py \
-       --ticker {TICKER} --strategy {StrategyName} --period 2y
-     cd {cwd} && python ~/.claude/plugins/cache/lucemia/investment-autoresearch/backtest_runner.py \
-       --ticker {TICKER} --strategy {StrategyName} --period 1y
+     RUNNER=~/.claude/plugins/cache/lucemia/investment-autoresearch/backtest_runner.py; [ -f "$RUNNER" ] || RUNNER={cwd}/backtest_runner.py
+     cd {cwd} && python3 $RUNNER --ticker {TICKER} --strategy {StrategyName} --period 5y
+     cd {cwd} && python3 $RUNNER --ticker {TICKER} --strategy {StrategyName} --period 3y
+     cd {cwd} && python3 $RUNNER --ticker {TICKER} --strategy {StrategyName} --period 2y
+     cd {cwd} && python3 $RUNNER --ticker {TICKER} --strategy {StrategyName} --period 1y
 
   3. For each period compute: Calmar = Return (Ann.) [%] / abs(Max. Drawdown [%])
 

@@ -4,8 +4,18 @@ Complete these steps once before using the plugin skills.
 
 ## 1. Install the plugin
 
+**Option A — Claude Code marketplace (when available):**
 ```bash
 claude plugin install gh:lucemia/investment-autoresearch
+```
+
+**Option B — Manual install (git clone):**
+```bash
+git clone https://github.com/lucemia/investment-autoresearch ~/.claude/plugins/cache/lucemia/investment-autoresearch
+# Copy skills into your Claude Code skills directory:
+for skill in ~/.claude/plugins/cache/lucemia/investment-autoresearch/skills/*/; do
+  cp -r "$skill" ~/.claude/skills/"$(basename "$skill")"
+done
 ```
 
 ## 2. Install Python dependencies
@@ -30,7 +40,7 @@ Verify it works:
 
 ```bash
 cd your-project
-python backtest_runner.py --ticker QQQ --strategy BuyAndHold --period 5y
+python3 backtest_runner.py --ticker QQQ --strategy BuyAndHold --period 5y
 ```
 
 You should see output containing:

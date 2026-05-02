@@ -35,9 +35,24 @@ The reset step is the key move. Existing code anchors thinking. Fresh agents fin
 
 ## Installation
 
+**Option A — Claude Code plugin (when available in marketplace):**
 ```bash
 claude plugin install gh:lucemia/investment-autoresearch
 pip install backtesting yfinance
+```
+
+**Option B — Manual install (works today):**
+```bash
+git clone https://github.com/lucemia/investment-autoresearch ~/.claude/plugins/cache/lucemia/investment-autoresearch
+pip install backtesting yfinance
+```
+
+Then copy the skills into your Claude Code skills directory:
+```bash
+for skill in ~/.claude/plugins/cache/lucemia/investment-autoresearch/skills/*/; do
+  name=$(basename "$skill")
+  cp -r "$skill" ~/.claude/skills/"$name"
+done
 ```
 
 ## End-to-End Workflow
@@ -56,7 +71,7 @@ Add your strategy classes to `strategies/{ticker}.py`. Verify it works:
 
 ```bash
 cd your-project
-python backtest_runner.py --ticker QQQ --strategy BuyAndHold --period 5y
+python3 backtest_runner.py --ticker QQQ --strategy BuyAndHold --period 5y
 ```
 
 You should see output containing `Return (Ann.) [%]` and `Max. Drawdown [%]`.
