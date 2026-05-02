@@ -8,19 +8,22 @@ Inspired by [Ryan Li's Paradigm Hackathon methodology](https://x.com/ryanli_me) 
 
 Runs a structured search loop over trading strategy variants:
 
-1. Establish a baseline score
-2. Seed hypotheses into `verified_insights.md`
-3. Launch 5–10 parallel agents, each testing ONE hypothesis in an isolated git worktree
-4. Collect results, update insights, decide: explore more or reset
-5. When stuck, spawn a fresh agent that reads only `verified_insights.md` — no existing code
+1. Ask two questions (ticker + goal), then auto-handle everything else
+2. Establish a buy-and-hold baseline
+3. Seed hypotheses into `verified_insights.md`
+4. Launch 4–10 parallel agents, each testing ONE hypothesis in an isolated git worktree
+5. Collect results, update insights, decide: explore more or reset
+6. When stuck, spawn a fresh agent that reads only `verified_insights.md` — no existing code
 
 The reset step is the key move. Existing code anchors thinking. Fresh agents find architectures incremental optimization cannot reach.
+
+**In practice:** QQQ went from Calmar 0.45 (buy-and-hold) to **Calmar 1.02** in two sessions, 8 total backtests. See [docs/demo-walkthrough.md](docs/demo-walkthrough.md).
 
 ## Skills
 
 | Skill | Trigger | Description |
 |---|---|---|
-| `investment-autoresearch` | `/autoresearch` | Core parallel loop — baseline → agents → insights → repeat |
+| `investment-autoresearch` | `/autoresearch` | Core parallel loop — two questions, then baseline → agents → insights → repeat |
 | `investment-autoresearch-parse` | `/autoresearch-parse` | Parse agent results into structured JSON + walk-forward backtests |
 | `investment-autoresearch-report` | `/autoresearch-report` | Generate a markdown report from `autoresearch_result.json` |
 | `investment-autoresearch-strategy-chart` | `/autoresearch-strategy-chart` | Generate matplotlib strategy chart; upload to Slack, Discord, or save locally |
@@ -30,36 +33,31 @@ The reset step is the key move. Existing code anchors thinking. Fresh agents fin
 - [Claude Code](https://claude.ai/code)
 - git 2.5+ (required for isolated worktrees)
 - Python 3.9+ with `backtesting` and `yfinance` installed
-- A CLI backtest command that outputs `Return (Ann.) [%]` and `Max. Drawdown [%]`
 - Optional: Slack or Discord bot token for chart uploads
 
 ## Installation
 
-**Option A — Claude Code plugin (when available in marketplace):**
+**Option A — Claude Code marketplace (when available):**
 ```bash
 claude plugin install gh:lucemia/investment-autoresearch
 pip install backtesting yfinance
 ```
 
-**Option B — Manual install (works today):**
+**Option B — Manual install (git clone):**
 ```bash
 git clone https://github.com/lucemia/investment-autoresearch ~/.claude/plugins/cache/lucemia/investment-autoresearch
 pip install backtesting yfinance
-```
-
-Then copy the skills into your Claude Code skills directory:
-```bash
+# Copy skills into Claude Code:
 for skill in ~/.claude/plugins/cache/lucemia/investment-autoresearch/skills/*/; do
-  name=$(basename "$skill")
-  cp -r "$skill" ~/.claude/skills/"$name"
+  cp -r "$skill" ~/.claude/skills/"$(basename "$skill")"
 done
 ```
 
-## End-to-End Workflow
+## Usage
 
-### 1. Set up your backtest runner (one-time)
+### 1. Set up your project (one-time)
 
-Copy the example runner from the plugin repo into your trading project. The plugin is installed at `~/.claude/plugins/cache/lucemia/investment-autoresearch/`:
+Copy the example runner and starter strategies into your trading project:
 
 ```bash
 PLUGIN=~/.claude/plugins/cache/lucemia/investment-autoresearch
@@ -67,28 +65,29 @@ cp $PLUGIN/examples/backtest_runner.py your-project/
 cp -r $PLUGIN/examples/strategies/ your-project/strategies/
 ```
 
-Add your strategy classes to `strategies/{ticker}.py`. Verify it works:
+Verify it works:
 
 ```bash
 cd your-project
 python3 backtest_runner.py --ticker QQQ --strategy BuyAndHold --period 5y
 ```
 
-You should see output containing `Return (Ann.) [%]` and `Max. Drawdown [%]`.
+Expected output:
+
+```
+Return (Ann.) [%]    15.31
+Max. Drawdown [%]    -34.22
+```
 
 ### 2. Run autoresearch
-
-In Claude Code:
 
 ```
 /autoresearch
 ```
 
-Claude will ask for your ticker, scoring command, and session name, then launch parallel agents — each testing one hypothesis in an isolated git worktree.
+Claude asks two questions — ticker and goal — then handles everything automatically: baseline run, hypothesis seeding, parallel agents, result collection, winner promotion.
 
 ### 3. Parse results
-
-After one or more rounds:
 
 ```
 /autoresearch-parse
@@ -114,23 +113,31 @@ Generates a 3-panel matplotlib chart (price + equity curve, drawdown, VIX). Opti
 
 ## Folder convention
 
-All research output goes under `archive/{ticker}-autoresearch-v{N}/`:
+All research output goes under `archive/{ticker}-autoresearch-v{N}/`. Each session auto-increments N.
 
 ```
 archive/
-└── qqq-autoresearch-v1/
-    ├── verified_insights.md        ← cumulative state (baseline, insights, rejections, hypotheses)
-    ├── AGENT_R1_RESULTS.md         ← round 1 results (one file per agent or per hypothesis)
-    ├── AGENT_R2_RESULTS.md
-    └── autoresearch_result.json    ← parsed + walk-forward metrics (from /autoresearch-parse)
+└── qqq-autoresearch-v2/
+    ├── verified_insights.md           ← cumulative state: baseline, confirmed, rejected, next hypotheses
+    ├── AGENT_R1_H5_RESULTS.md         ← one file per agent/hypothesis
+    ├── AGENT_R1_H6_RESULTS.md
+    ├── AGENT_R1_H7_RESULTS.md
+    ├── AGENT_R1_H8_RESULTS.md
+    └── autoresearch_result.json       ← parsed + walk-forward metrics (from /autoresearch-parse)
 ```
+
+`verified_insights.md` is the state machine of the loop — it carries every confirmed principle and rejection forward across sessions. New sessions seed from the previous session's file.
 
 ## Running tests
 
 ```bash
 pip install pytest
-python -m pytest tests/ -v
+python3 -m pytest tests/ -v
 ```
+
+## Demo
+
+See [docs/demo-walkthrough.md](docs/demo-walkthrough.md) for a full QQQ example: two sessions, 8 strategies, buy-and-hold Calmar 0.45 → **1.02**.
 
 ## License
 
