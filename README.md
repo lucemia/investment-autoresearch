@@ -19,7 +19,7 @@ The reset step is the key move. Existing code anchors thinking. Fresh agents fin
 
 ```mermaid
 flowchart TD
-    A(["/autoresearch"]) --> B["Ask: ticker + goal"]
+    A(["/investment-autoresearch"]) --> B["Ask: ticker + goal"]
     B --> C["Run baseline\nBuyAndHold → Calmar score"]
     C --> D["Seed verified_insights.md\n4–6 hypotheses"]
     D --> E["Launch parallel agents\none hypothesis each · isolated worktree"]
