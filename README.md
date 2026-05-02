@@ -17,6 +17,20 @@ Runs a structured search loop over trading strategy variants:
 
 The reset step is the key move. Existing code anchors thinking. Fresh agents find architectures incremental optimization cannot reach.
 
+```mermaid
+flowchart TD
+    A(["/autoresearch"]) --> B["Ask: ticker + goal"]
+    B --> C["Run baseline\nBuyAndHold → Calmar score"]
+    C --> D["Seed verified_insights.md\n4–6 hypotheses"]
+    D --> E["Launch parallel agents\none hypothesis each · isolated worktree"]
+    E --> F["Collect results\nbuild scoreboard"]
+    F --> G["Update verified_insights.md\npromote winners · record rejections"]
+    G --> H{Plateau?\n5+ agents fail\nor <5% gain}
+    H -- "no · new hypotheses" --> E
+    H -- "yes · stuck" --> I["Reset agent\nreads only verified_insights.md\nno existing code"]
+    I --> F
+```
+
 **In practice:** QQQ went from Calmar 0.45 (buy-and-hold) to **Calmar 1.02** in two sessions, 8 total backtests. See [docs/demo-walkthrough.md](docs/demo-walkthrough.md).
 
 ## Skills
