@@ -73,17 +73,15 @@ flowchart TD
 
 ## Installation
 
-```bash
-claude plugin install gh:lucemia/investment-autoresearch
-pip3 install backtesting yfinance
+```
+/plugin marketplace add lucemia/investment-autoresearch
+/plugin install investment-autoresearch
 ```
 
-Then restart Claude Code.
-
-To update later:
+Then install the Python dependencies:
 
 ```bash
-claude plugin update investment-autoresearch
+pip3 install backtesting yfinance
 ```
 
 **Manual install (fallback):**
