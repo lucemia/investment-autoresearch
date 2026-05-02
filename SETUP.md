@@ -24,32 +24,7 @@ done
 pip install backtesting yfinance
 ```
 
-## 3. Set up your backtest runner
-
-Copy the example runner into your trading project. The plugin is installed at `~/.claude/plugins/cache/lucemia/investment-autoresearch/`:
-
-```bash
-PLUGIN=~/.claude/plugins/cache/lucemia/investment-autoresearch
-cp $PLUGIN/examples/backtest_runner.py your-project/
-cp -r $PLUGIN/examples/strategies/ your-project/strategies/
-```
-
-Add your strategy classes to `your-project/strategies/{ticker}.py`. Each class must extend `backtesting.Strategy`. The runner discovers classes by module name — `--ticker QQQ --strategy MyStrategy` loads `strategies.qqq.MyStrategy`.
-
-Verify it works:
-
-```bash
-cd your-project
-python3 backtest_runner.py --ticker QQQ --strategy BuyAndHold --period 5y
-```
-
-You should see output containing:
-```
-Return (Ann.) [%]    15.5
-Max. Drawdown [%]    -34.2
-```
-
-## 4. Configure chart uploads (optional)
+## 3. Configure chart uploads (optional)
 
 ### Slack
 
@@ -80,12 +55,12 @@ Set `DISCORD_BOT_TOKEN` in your shell profile and use your Discord channel ID wh
 
 Skip steps above. Charts save to `/tmp/chart.png` automatically.
 
-## 5. Verify everything works
+## 4. Verify everything works
 
 Run the test suite from the plugin repo:
 
 ```bash
-pip install pytest && python -m pytest tests/ -v
+pip install pytest && python3 -m pytest tests/ -v
 ```
 
 All tests should pass. The runner smoke tests require network access for yfinance data.

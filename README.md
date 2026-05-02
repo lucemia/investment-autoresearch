@@ -55,31 +55,7 @@ done
 
 ## Usage
 
-### 1. Set up your project (one-time)
-
-Copy the example runner and starter strategies into your trading project:
-
-```bash
-PLUGIN=~/.claude/plugins/cache/lucemia/investment-autoresearch
-cp $PLUGIN/examples/backtest_runner.py your-project/
-cp -r $PLUGIN/examples/strategies/ your-project/strategies/
-```
-
-Verify it works:
-
-```bash
-cd your-project
-python3 backtest_runner.py --ticker QQQ --strategy BuyAndHold --period 5y
-```
-
-Expected output:
-
-```
-Return (Ann.) [%]    15.31
-Max. Drawdown [%]    -34.22
-```
-
-### 2. Run autoresearch
+### 1. Run autoresearch
 
 ```
 /autoresearch
