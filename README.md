@@ -80,6 +80,8 @@ pip install backtesting yfinance
 
 Then restart Claude Code — it will auto-discover the plugin from the cache directory.
 
+To update later: `git -C ~/.claude/plugins/cache/lucemia/investment-autoresearch pull`
+
 > Once listed in the Claude Code marketplace, installation will simplify to: `claude plugin install gh:lucemia/investment-autoresearch`
 
 ## Usage
