@@ -31,7 +31,30 @@ flowchart TD
     I --> F
 ```
 
-**In practice:** QQQ went from Calmar 0.45 (buy-and-hold) to **Calmar 1.02** in two sessions, 8 total backtests. See [docs/demo-walkthrough.md](docs/demo-walkthrough.md).
+**In practice:** QQQ went from Calmar 0.45 (buy-and-hold) to **Calmar 1.02** in two sessions, 8 total backtests. See the [live demo archive](archive/qqq-autoresearch-v2/) and [full walkthrough](docs/demo-walkthrough.md).
+
+## What it looks like
+
+```
+/investment-autoresearch
+
+  What ticker? → QQQ
+  Higher returns or limiting losses? → limiting losses
+
+  ✓ Baseline: BuyAndHold — Ann. 15.3%, MaxDD -34.2%, Calmar 0.45
+  ✓ Seeded 5 hypotheses → archive/qqq-autoresearch-v1/verified_insights.md
+  ↗ Launching 5 agents in parallel...
+
+  [agent 1]  testing GoldenCross_50_200 ...........  ✓  Calmar 0.46  BEAT
+  [agent 2]  testing RsiFilter ..................... ✓  Calmar 0.01  WORSE
+  [agent 3]  testing MomentumFilter3M ............. ✓  Calmar 0.34  WORSE
+  [agent 4]  testing PriceAbove200Sma ............. ✓  Calmar 1.02  BEAT ↑
+  [agent 5]  testing VolatilityExit ............... ✓  Calmar 0.28  WORSE
+
+  Winner promoted → strategies/qqq/PriceAbove200Sma.py
+  Insights updated → archive/qqq-autoresearch-v1/verified_insights.md
+  Next: run /investment-autoresearch again to continue from here
+```
 
 ## Skills
 
@@ -51,21 +74,17 @@ flowchart TD
 
 ## Installation
 
-**Option A — Claude Code marketplace (when available):**
-```bash
-claude plugin install gh:lucemia/investment-autoresearch
-pip install backtesting yfinance
-```
-
-**Option B — Manual install (git clone):**
 ```bash
 git clone https://github.com/lucemia/investment-autoresearch ~/.claude/plugins/cache/lucemia/investment-autoresearch
 pip install backtesting yfinance
-# Copy skills into Claude Code:
+
+# Register skills with Claude Code:
 for skill in ~/.claude/plugins/cache/lucemia/investment-autoresearch/skills/*/; do
   cp -r "$skill" ~/.claude/skills/"$(basename "$skill")"
 done
 ```
+
+> Once this plugin is listed in the Claude Code marketplace, installation will be a single command: `claude plugin install gh:lucemia/investment-autoresearch`
 
 ## Usage
 
@@ -113,10 +132,19 @@ archive/
     ├── AGENT_R1_H6_RESULTS.md
     ├── AGENT_R1_H7_RESULTS.md
     ├── AGENT_R1_H8_RESULTS.md
-    └── autoresearch_result.json       ← parsed + walk-forward metrics (from /autoresearch-parse)
+    └── autoresearch_result.json       ← parsed + walk-forward metrics (from /investment-autoresearch-parse)
 ```
 
 `verified_insights.md` is the state machine of the loop — it carries every confirmed principle and rejection forward across sessions. New sessions seed from the previous session's file.
+
+## Demo
+
+The `archive/` folder in this repo contains a live QQQ run across two sessions:
+
+- [`archive/qqq-autoresearch-v1/`](archive/qqq-autoresearch-v1/) — Round 1: 4 strategies, BuyAndHold → SmaCross_50_200 (Calmar 0.45 → 0.46)
+- [`archive/qqq-autoresearch-v2/`](archive/qqq-autoresearch-v2/) — Round 2: 4 strategies, SmaCross_50_200 → PriceAbove200Sma (Calmar 0.46 → 1.02)
+
+See [docs/demo-walkthrough.md](docs/demo-walkthrough.md) for the full annotated walkthrough.
 
 ## Running tests
 
@@ -124,10 +152,6 @@ archive/
 pip install pytest
 python3 -m pytest tests/ -v
 ```
-
-## Demo
-
-See [docs/demo-walkthrough.md](docs/demo-walkthrough.md) for a full QQQ example: two sessions, 8 strategies, buy-and-hold Calmar 0.45 → **1.02**.
 
 ## License
 
