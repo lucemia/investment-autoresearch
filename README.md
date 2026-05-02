@@ -70,7 +70,6 @@ flowchart TD
 - [Claude Code](https://claude.ai/code)
 - git 2.5+ (required for isolated worktrees)
 - Python 3.9+ with `backtesting` and `yfinance` installed
-- Optional: Slack or Discord bot token for chart uploads
 
 ## Installation
 
